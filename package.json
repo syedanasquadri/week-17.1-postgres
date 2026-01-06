@@ -1,0 +1,16 @@
+{
+  "name": "week-17-postgres",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc -b && node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/pg": "^8.16.0",
+    "pg": "^8.16.3"
+  }
+}
