@@ -26,7 +26,6 @@ app.post("/signup", async (req, res) => {
 
         const response = await pgClient.query(insertQuery, [username, password, email]);
         const userId = response.rows[0].id;
-        await new Promise(x => setTimeout(x, 100 * 1000))
         const responseAddressQuery = await pgClient.query(addressInsertQuery, [city, country, street, pincode, userId]);
 
         await pgClient.query('COMMIT;')
@@ -44,15 +43,26 @@ app.post("/signup", async (req, res) => {
 
 app.get("/metadata", async (req, res) => {
     const id = req.query.id;
-    const query1 = `SELECT * FROM users WHERE id=$1;`;
+    const query1 = `SELECT username,email,id FROM users WHERE id=$1;`;
     const response1 = await pgClient.query(query1,[id]);
 
-    const query2 = `SELECT * FROM addresses WHERE id=$1;`;
+    const query2 = `SELECT * FROM addresses WHERE user_id=$1;`;
     const response2 = await pgClient.query(query2,[id]);
 
     res.json({
         user: response1.rows[0],
-        address : response2
+        address : response2.rows
+    })
+})
+
+app.get("/better-metadata", async (req,res) => {
+    const id = req.query.id;
+    const query = `SELECT users.id, users.username, users.email, users.password, addresses.city, addresses.country, addresses.street, addresses.pincode
+    FROM users LEFT JOIN addresses ON users.id = addresses.user_id
+    WHERE users.id = $1`;
+    const response = await pgClient.query(query,[id])
+    res.json({
+        response : response.rows
     })
 })
 
